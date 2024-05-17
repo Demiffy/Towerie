@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="warning-message" style="display: none; text-align: center; padding: 20px; background-color: #ffcccb;">
+        Your screen is too small. Please resize your browser window to at least 1200x800 pixels for the best experience.
+    </div>
+    <div id="game-container" style="display: none;">
+        <div id="top-bar">
+            <span id="wave-info">Wave: 1</span>
+            <span id="phase-info" style="margin-left: 20px;">Preparation Phase</span>
+            <span id="health-info" style="float: right; margin-right: 20px;">Health: 100</span>
+        </div>
+        <canvas id="game-canvas"></canvas>
+        <div id="bottom-bar" style="display: none;">
+            <div id="tower-menu">
+                <!-- Tower options -->
+                <button class="tower-option">Tower 1</button>
+                <button class="tower-option">Tower 2</button>
+                <button class="tower-option">Tower 3</button>
+                <button class="tower-option">Tower 4</button>
+                <button class="tower-option">Tower 5</button>
+                <button class="tower-option">Tower 6</button>
+                <button class="tower-option">Tower 7</button>
+                <button class="tower-option">Tower 8</button>
+                <button class="tower-option">Tower 9</button>
+                <button class="tower-option">Tower 10</button>
+            </div>
+            <button id="phase-button">Start Round</button>
+        </div>
+    </div>
+    <button id="start-game-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background-color: #28a745; color: white; border: none; cursor: pointer; font-size: 20px;">
+        Start Game
+    </button>
+    <script src="js/canvassize.js"></script>
+    <script src="js/pathrandomizer.js"></script>
+    <script src="js/fullscreencheck.js"></script>
+    <script src="js/wavecontroller.js"></script>
+</body>
+</html>
