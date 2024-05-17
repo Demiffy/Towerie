@@ -1,3 +1,16 @@
+const towerRanges = {
+    'Tower 1': 100,
+    'Tower 2': 150,
+    'Tower 3': 200,
+    'Tower 4': 120,
+    'Tower 5': 180,
+    'Tower 6': 160,
+    'Tower 7': 140,
+    'Tower 8': 170,
+    'Tower 9': 130,
+    'Tower 10': 50,
+};
+
 function handleTowerSelection(event) {
     window.selectedTower = event.target.textContent;
     console.log(`Selected tower: ${window.selectedTower}`);
@@ -10,8 +23,8 @@ function handleCanvasClick(event) {
         const y = event.clientY - rect.top;
 
         if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
-            window.towers.push({ x, y });
-            console.log(`Tower placed at (${x}, ${y})`);
+            window.towers.push({ x, y, range: towerRanges[window.selectedTower] });
+            console.log(`Tower placed at (${x}, ${y}) with range ${towerRanges[window.selectedTower]}`);
             drawTowers();
         } else {
             console.log('Cannot place tower here');
@@ -48,13 +61,18 @@ function isPointNearTower(x, y) {
 function drawPlacementIndicator() {
     if (window.selectedTower && gamePhase === 'preparation') {
         const validPlacement = !isPointInPath(window.mouseX, window.mouseY) && !isPointNearTower(window.mouseX, window.mouseY);
+        const range = towerRanges[window.selectedTower];
+        
+        // Draw the range circle
+        window.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        window.ctx.beginPath();
+        window.ctx.arc(window.mouseX, window.mouseY, range, 0, Math.PI * 2);
+        window.ctx.fill();
+
+        // Draw the tower placement circle
         window.ctx.fillStyle = validPlacement ? 'green' : 'red';
         window.ctx.beginPath();
         window.ctx.arc(window.mouseX, window.mouseY, towerSize / 2, 0, Math.PI * 2);
         window.ctx.fill();
     }
-}
-
-function updateTowers() {
-    // Placeholder for future tower functionality
 }

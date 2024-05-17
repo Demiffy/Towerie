@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 top: path.find(p => p.x === block.x && p.y === block.y - 1),
                 right: path.find(p => p.x === block.x + 1 && p.y === block.y),
                 bottom: path.find(p => p.x === block.x && p.y === block.y + 1),
-                left: path.find(p => p.x === block.x - 1 && p.y === block.y)
+                left: path.find(p => p.x === block.x - 1)
             };
 
             // Draw borders only where there are no neighbors
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let path = [];
         let x = 0;
-        let y = Math.floor(Math.random() * rows);
+        let y = Math.floor(Math.random() * (rows - 2)) + 1;  // Ensure starting point is not at the top or bottom edge
         path.push({ x, y });
 
         let turns = 0;
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Function to check if the next move would create a loop
         function isValidMove(nextX, nextY) {
-            if (nextX < 0 || nextX >= cols || nextY < 0 || nextY >= rows) {
+            if (nextX < 0 || nextX >= cols || nextY <= 0 || nextY >= rows - 1) {  // Ensure next move is within bounds
                 return false;
             }
             // Check if the next move creates a 2x2 loop
@@ -129,9 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Introduce a chance to turn towards the end
                     if (Math.random() < 0.2 && x < cols - 2) { // 20% chance to turn
                         direction = Math.random() > 0.5 ? 'up' : 'down';
-                        if (direction === 'up' && y > 0) {
+                        if (direction === 'up' && y > 1) {  // Ensure it doesn't go to the top edge
                             y--;
-                        } else if (direction === 'down' && y < rows - 1) {
+                        } else if (direction === 'down' && y < rows - 2) {  // Ensure it doesn't go to the bottom edge
                             y++;
                         }
                         if (isValidMove(x, y)) {

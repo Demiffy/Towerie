@@ -22,6 +22,7 @@ function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerB
     window.enemySize = 20;
     window.phaseInfo = document.getElementById('phase-info');
     window.healthInfo = document.getElementById('health-info');
+    window.topBar = document.getElementById('top-bar');
 
     pathRandomizerInterval = setInterval(randomizePath, 2000);
 }
@@ -34,7 +35,8 @@ function startGame() {
     window.phaseInfo.textContent = 'Preparation Phase';
     phaseButton.textContent = 'Start Round';
     phaseButton.style.display = 'inline-block';
-    bottomBar.style.display = 'block';
+    bottomBar.style.display = 'flex';
+    topBar.style.display = 'block'; // Show the top bar
     update(); // Start the update loop
 }
 
@@ -53,7 +55,7 @@ function startRound() {
 function update() {
     clearCanvas();
     window.drawPath(path);
-    window.updateTowers(); // Ensure updateTowers is defined
+    window.updateTowers();
     updateEnemies();
     drawTowers();
     drawEnemies();

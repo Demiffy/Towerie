@@ -23,12 +23,16 @@ html, body {
 }
 
 #top-bar {
-    position: absolute;
-    top: 10px;
+    display: none;
+    position: fixed;
+    top: 0;
     width: 100%;
     text-align: center;
-    z-index: 10;
+    z-index: 1;
+    padding: 10px 0;
 }
+
+
 
 #wave-info {
     font-size: 24px;
@@ -37,6 +41,7 @@ html, body {
 
 #game-canvas {
     width: 100%;
+    margin-top: 50px;
     background-color: #1e1e1e;
     display: block;
 }
@@ -50,6 +55,7 @@ html, body {
     padding: 10px;
     background-color: #333;
     box-sizing: border-box;
+    height: 140px;
     z-index: 10;
 }
 
@@ -86,4 +92,47 @@ html, body {
 #phase-button:hover {
     background-color: #419121;
     transform: scale(1.1);
+}
+
+#start-game-button {
+    position: absolute;
+    top: 50%;
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    padding: 20px 40px;
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 8px;
+    cursor: pointer; 
+    font-size: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#start-game-button:hover {
+    background-color: #218838;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+#warning-message {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 30px 50px;  /* Adjusted padding for a better look */
+    background-color: #222;  /* Darker background color */
+    color: white;  /* White text color */
+    border-radius: 10px;  /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Subtle shadow effect */
+    z-index: 100;
+    font-size: 18px;  /* Slightly larger font size */
+    font-family: 'Arial', sans-serif;  /* Modern font family */
+}
+
+#warning-message p {
+    margin: 0;
+    padding: 0;
 }
