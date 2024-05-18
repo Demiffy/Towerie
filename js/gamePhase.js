@@ -5,6 +5,7 @@ window.bullets = [];
 window.money = 100;
 window.wave = 1;
 let waveEndCheckTimeout = null;
+let isGameOver = false;  // Flag to track if the game is over
 
 function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerButtons) {
     window.ctx = ctx;
@@ -35,6 +36,7 @@ function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerB
     window.waveClearedMessage = document.getElementById('wave-cleared-message');
     window.waveReward = document.getElementById('wave-reward');
     window.waveNumber = document.getElementById('wave-number');
+    window.gameOverScreen = document.getElementById('game-over-screen');
 
     pathRandomizerInterval = setInterval(randomizePath, 2000);
 }
@@ -58,6 +60,7 @@ function randomizePath() {
 }
 
 function startRound() {
+    if (isGameOver) return;  // Prevent starting a new round if the game is over
     gamePhase = 'round';
     window.phaseInfo.textContent = 'Round Phase';
     phaseButton.style.display = 'none';
@@ -67,6 +70,7 @@ function startRound() {
 }
 
 function endRound() {
+    if (isGameOver) return;  // Prevent ending the round if the game is over
     gamePhase = 'preparation';
     const reward = window.wave * 10; // Example reward calculation
     updateMoney(reward);
@@ -101,7 +105,7 @@ function update() {
     drawEnemies();
     drawBullets();
     drawPlacementIndicator();
-    if (gamePhase === 'round') {
+    if (gamePhase === 'round' && !isGameOver) {
         requestAnimationFrame(update);
     }
 }
@@ -129,6 +133,8 @@ function showWaveClearedMessage(waveNumber, reward) {
 }
 
 function showGameOverScreen() {
+    isGameOver = true;  // Set the game over flag
+    window.phaseButton.style.display = 'none';  // Hide the phase button
     const gameOverScreen = document.getElementById('game-over-screen');
     gameOverScreen.style.display = 'block';
     const restartButton = document.getElementById('restart-button');
