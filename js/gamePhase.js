@@ -70,10 +70,24 @@ function startRound() {
     spawnWave();
 }
 
+function getRewardForWave(wave) {
+    if (wave >= 1 && wave <= 5) {
+        return 150;
+    } else if (wave >= 6 && wave <= 10) {
+        return 300;
+    } else if (wave >= 11 && wave <= 15) {
+        return 450;
+    } else if (wave >= 16 && wave <= 20) {
+        return 600;
+    } else {
+        return 750; // For waves beyond 20
+    }
+}
+
 function endRound() {
     if (isGameOver) return;  // Prevent ending the round if the game is over
     gamePhase = 'preparation';
-    const reward = window.wave * 100; // Example reward calculation
+    const reward = getRewardForWave(window.wave); // Get the reward based on the wave
     updateMoney(reward);
     window.wave++;
     window.waveInfo.textContent = `Wave: ${window.wave}`;
@@ -113,12 +127,20 @@ function update() {
     }
 }
 
-
 function handleMouseDown(event) {
     if (event.button === 1) { // Middle mouse button
         window.selectedTower = null;
         window.towerStatsPanel.style.display = 'none'; // Hide tower stats panel
         console.log('Tower placement deselected');
+    }
+}
+
+function handleMouseMove(event) {
+    const rect = window.canvas.getBoundingClientRect();
+    window.mouseX = event.clientX - rect.left;
+    window.mouseY = event.clientY - rect.top;
+    if (gamePhase === 'preparation') {
+        update(); // Only update during preparation phase
     }
 }
 
@@ -146,3 +168,6 @@ function showGameOverScreen() {
         window.location.reload(); // Reload the game
     });
 }
+
+document.addEventListener('mousemove', handleMouseMove);
+document.addEventListener('mousedown', handleMouseDown);
