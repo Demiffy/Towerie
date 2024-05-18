@@ -5,7 +5,8 @@ const enemyTypes = [
 ];
 
 function spawnWave() {
-    for (let i = 0; i < 5; i++) {
+    const numberOfEnemies = 5 + Math.floor(Math.random() * 6) + (window.wave - 1) * 5; // Increase enemies by 5-10 each wave
+    for (let i = 0; i < numberOfEnemies; i++) {
         setTimeout(() => {
             const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
             const enemy = {
@@ -87,12 +88,4 @@ function drawEnemies() {
         window.ctx.fillStyle = 'green';
         window.ctx.fillRect(healthBarX, healthBarY, healthBarFillWidth, healthBarHeight);
     });
-}
-
-function updateHealthDisplay() {
-    window.healthInfo.textContent = `Health: ${window.health}`;
-    if (window.health <= 0) {
-        alert('Game Over');
-        window.location.reload(); // Reload the game
-    }
 }

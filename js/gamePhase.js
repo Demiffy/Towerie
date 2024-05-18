@@ -127,3 +127,12 @@ function showWaveClearedMessage(waveNumber, reward) {
         window.waveClearedMessage.style.display = 'none';
     }, 2000);
 }
+
+function showGameOverScreen() {
+    const gameOverScreen = document.getElementById('game-over-screen');
+    gameOverScreen.style.display = 'block';
+    const restartButton = document.getElementById('restart-button');
+    restartButton.addEventListener('click', () => {
+        window.location.reload(); // Reload the game
+    });
+}
