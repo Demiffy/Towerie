@@ -34,7 +34,7 @@ function updateTowers() {
         const target = findFurthestEnemyInRange(tower);
         if (target) {
             shootBullet(tower, target);
-            tower.cooldown = tower.fireRate; // Cooldown period between shots
+            tower.cooldown = Math.floor(60 / tower.fireRate); // Cooldown period adjusted for fire rate
         }
     });
 }
@@ -44,8 +44,12 @@ function findFurthestEnemyInRange(tower) {
     let maxDistance = -1;
 
     window.enemies.forEach(enemy => {
-        const dx = (enemy.x + window.enemySize / 2) - tower.x;
-        const dy = (enemy.y + window.enemySize / 2) - tower.y;
+        if (enemy.camouflaged && !tower.canSeeCamouflaged) {
+            return; // Skip camouflaged enemies if the tower cannot see them
+        }
+
+        const dx = enemy.x - tower.x;
+        const dy = enemy.y - tower.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance <= tower.range && enemy.pathIndex > maxDistance) {

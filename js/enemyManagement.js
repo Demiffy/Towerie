@@ -1,7 +1,9 @@
 const enemyTypes = [
-    { color: 'red', speed: 1, health: 100, reward: 20 },
-    { color: 'green', speed: 2, health: 50, reward: 10 },
-    { color: 'blue', speed: 0.5, health: 200, reward: 30 }
+    { color: 'red', speed: 1, health: 100, reward: 20, camouflaged: false },
+    { color: 'green', speed: 2, health: 50, reward: 10, camouflaged: false },
+    { color: 'blue', speed: 0.5, health: 200, reward: 30, camouflaged: false },
+    { color: 'grey', speed: 1.5, health: 80, reward: 15, camouflaged: true },
+    { color: 'yellow', speed: 2.5, health: 40, reward: 5, camouflaged: true }
 ];
 
 function spawnWave() {
@@ -20,6 +22,7 @@ function spawnWave() {
                 health: type.health,
                 maxHealth: type.health,
                 reward: type.reward,
+                camouflaged: type.camouflaged,
                 dead: false
             };
             window.enemies.push(enemy);
