@@ -150,7 +150,8 @@ function updateBullets() {
         if (distance < 5) {
             // Hit the target
             if (!bullet.target.dead) {
-                bullet.target.health -= bullet.damage; // Deal damage according to the tower's damage
+                const effectiveDamage = bullet.damage - bullet.target.armor; // Armor reduces damage
+                bullet.target.health -= Math.max(effectiveDamage, 0); // Ensure damage is not negative
                 if (bullet.target.health <= 0) {
                     const reward = bullet.target.reward;
                     bullet.target.dead = true; // Mark enemy as dead
