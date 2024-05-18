@@ -114,8 +114,10 @@ function update() {
     clearCanvas();
     window.drawPathAndObstacles(path, obstacles);
     window.updateTowers();
-    updateEnemies();
-    updateBullets();
+    if (gamePhase === 'round') {
+        updateEnemies();
+        updateBullets();
+    }
     drawTowers();
     drawEnemies();
     drawBullets();
