@@ -105,10 +105,13 @@ function update() {
     drawEnemies();
     drawBullets();
     drawPlacementIndicator();
-    if (gamePhase === 'round' && !isGameOver) {
+    if (gamePhase === 'round') {
         requestAnimationFrame(update);
+    } else if (gamePhase === 'preparation' && selectedTowerIndex !== null) {
+        drawTowerRange(window.towers[selectedTowerIndex]);
     }
 }
+
 
 function handleMouseDown(event) {
     if (event.button === 1) { // Middle mouse button

@@ -21,8 +21,21 @@ function handleTowerSelection(event) {
     if (gamePhase === 'preparation') {
         window.selectedTower = event.target.textContent;
         const stats = towerStats[window.selectedTower];
+        const canAfford = window.money >= stats.price;
+        const priceColor = canAfford ? 'green' : 'red';
+
         window.towerStatsTitle.textContent = `${window.selectedTower} Stats`;
-        window.towerStatsText.textContent = `Range: ${stats.range}, Damage: ${stats.damage}, Fire Rate: ${stats.fireRate}, Bullet Speed: ${stats.bulletSpeed}, Splash Damage: ${stats.splashDamage}, Fire Damage: ${stats.fireDamage}, Slow: ${stats.slow}, Can See Camouflaged: ${stats.canSeeCamouflaged}, Price: ${stats.price}`;
+        window.towerStatsText.innerHTML = `
+            Range: ${stats.range} <br>
+            Damage: ${stats.damage} <br>
+            Fire Rate: ${stats.fireRate} <br>
+            Bullet Speed: ${stats.bulletSpeed} <br>
+            Splash Damage: ${stats.splashDamage} <br>
+            Fire Damage: ${stats.fireDamage} <br>
+            Slow: ${stats.slow} <br>
+            Can See Camouflaged: ${stats.canSeeCamouflaged} <br>
+            <span style="color: ${priceColor}; font-weight: bold;">Price: ${stats.price}</span>
+        `;
         window.towerStatsPanel.style.display = 'block';
         console.log(`Selected tower: ${window.selectedTower}`);
     }
@@ -106,11 +119,16 @@ function showTowerInfo(tower, x, y) {
     panel.style.left = `${panelX}px`;
     panel.style.top = `${panelY}px`;
     panel.style.display = 'block';
+
+    // Draw the range circle around the selected tower
+    drawTowers();
+    drawTowerRange(tower);
 }
 
 function hideTowerInfo() {
     document.getElementById('tower-info-panel').style.display = 'none';
     selectedTowerIndex = null;
+    drawTowers(); // Clear the range indicator
 }
 
 function destroyTower() {
@@ -167,6 +185,13 @@ function drawPlacementIndicator() {
             window.ctx.fill();
         });
     }
+}
+
+function drawTowerRange(tower) {
+    window.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    window.ctx.beginPath();
+    window.ctx.arc(tower.x, tower.y, tower.range, 0, Math.PI * 2);
+    window.ctx.fill();
 }
 
 function showInsufficientFunds() {
