@@ -18,7 +18,8 @@ function spawnWave() {
                 speed: type.speed,
                 health: type.health,
                 maxHealth: type.health,
-                reward: type.reward
+                reward: type.reward,
+                dead: false
             };
             window.enemies.push(enemy);
         }, i * 1000); // Spawn enemies at intervals
@@ -55,11 +56,14 @@ function updateEnemies() {
     for (let i = window.enemies.length - 1; i >= 0; i--) {
         if (window.enemies[i].reachedEnd) {
             window.enemies.splice(i, 1);
-        } else if (window.enemies[i].health <= 0) {
+            checkWaveEnd();
+        } else if (window.enemies[i].health <= 0 && !window.enemies[i].dead) {
             const reward = window.enemies[i].reward;
+            window.enemies[i].dead = true; // Mark enemy as dead
             updateMoney(reward);
             console.log(`Enemy killed! Money increased by ${reward}. Total money: ${window.money}`);
             window.enemies.splice(i, 1);
+            checkWaveEnd();
         }
     }
 }

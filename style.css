@@ -59,6 +59,24 @@ html, body {
     animation: fadeOut 2s forwards;
 }
 
+#wave-cleared-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffeb3b;
+    font-weight: bold;
+    padding: 20px 40px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 28px;
+    background: rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    user-select: none;
+    animation: fadeOut 2s 2s forwards, slideIn 0.5s ease-out;
+}
+
 @keyframes fadeOut {
     0% {
         opacity: 1;
@@ -67,6 +85,18 @@ html, body {
         opacity: 0;
     }
 }
+
+@keyframes slideIn {
+    0% {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
 
 #game-canvas {
     width: 100%;

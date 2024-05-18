@@ -101,12 +101,16 @@ function updateBullets() {
 
         if (distance < 5) {
             // Hit the target
-            bullet.target.health -= bullet.damage; // Deal damage according to the tower's damage
-            if (bullet.target.health <= 0) {
-                const reward = bullet.target.reward;
-                updateMoney(reward);
-                console.log(`Enemy killed by bullet! Money increased by ${reward}. Total money: ${window.money}`);
-                window.enemies.splice(window.enemies.indexOf(bullet.target), 1);
+            if (!bullet.target.dead) {
+                bullet.target.health -= bullet.damage; // Deal damage according to the tower's damage
+                if (bullet.target.health <= 0) {
+                    const reward = bullet.target.reward;
+                    bullet.target.dead = true; // Mark enemy as dead
+                    updateMoney(reward);
+                    console.log(`Enemy killed by bullet! Money increased by ${reward}. Total money: ${window.money}`);
+                    window.enemies.splice(window.enemies.indexOf(bullet.target), 1);
+                    checkWaveEnd();
+                }
             }
             window.bullets.splice(index, 1);
         }

@@ -3,6 +3,8 @@ let gamePhase = 'preparation';
 let pathRandomizerInterval;
 window.bullets = [];
 window.money = 100;
+window.wave = 1;
+let waveEndCheckTimeout = null;
 
 function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerButtons) {
     window.ctx = ctx;
@@ -28,10 +30,11 @@ function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerB
     window.towerStatsPanel = document.getElementById('tower-stats-panel');
     window.towerStatsTitle = document.getElementById('tower-stats-title');
     window.towerStatsText = document.getElementById('tower-stats');
-
-    window.wave = 1;
     window.waveInfo = document.getElementById('wave-info');
     window.topBar = document.getElementById('top-bar');
+    window.waveClearedMessage = document.getElementById('wave-cleared-message');
+    window.waveReward = document.getElementById('wave-reward');
+    window.waveNumber = document.getElementById('wave-number');
 
     pathRandomizerInterval = setInterval(randomizePath, 2000);
 }
@@ -63,6 +66,31 @@ function startRound() {
     spawnWave();
 }
 
+function endRound() {
+    gamePhase = 'preparation';
+    const reward = window.wave * 10; // Example reward calculation
+    updateMoney(reward);
+    window.wave++;
+    window.waveInfo.textContent = `Wave: ${window.wave}`;
+    window.waveNumber.textContent = window.wave;
+    window.phaseInfo.textContent = 'Preparation Phase';
+    window.phaseButton.textContent = 'Start Round';
+    window.phaseButton.style.display = 'inline-block';
+    showWaveClearedMessage(window.wave - 1, reward); // Pass previous wave number
+}
+
+function checkWaveEnd() {
+    if (waveEndCheckTimeout) {
+        clearTimeout(waveEndCheckTimeout);
+    }
+
+    waveEndCheckTimeout = setTimeout(() => {
+        if (window.enemies.length === 0) {
+            endRound();
+        }
+    }, 3000);
+}
+
 function update() {
     clearCanvas();
     window.drawPath(path);
@@ -89,4 +117,13 @@ function handleMouseDown(event) {
 function updateMoney(amount) {
     window.money += amount;
     window.moneyInfo.textContent = `Money: ${window.money}`;
+}
+
+function showWaveClearedMessage(waveNumber, reward) {
+    window.waveReward.textContent = `Reward: ${reward}`;
+    window.waveClearedMessage.innerHTML = `Wave ${waveNumber} cleared! <br> ${window.waveReward.textContent}`;
+    window.waveClearedMessage.style.display = 'block';
+    setTimeout(() => {
+        window.waveClearedMessage.style.display = 'none';
+    }, 2000);
 }
