@@ -212,6 +212,43 @@ html, body {
     user-select: none;
 }
 
+#tower-info-panel {
+    position: absolute;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+    z-index: 6;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+#tower-info-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+#tower-info-panel p {
+    margin: 5px 0;
+}
+
+#tower-info-panel button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#tower-info-panel button:hover {
+    background-color: #c9302c;
+    transform: scale(1.05);
+}
+
 #tower-stats-panel h3, #tower-stats-panel p {
     margin: 5px 0;
 }

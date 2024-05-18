@@ -1,20 +1,21 @@
 const towerStats = {
-    'Tower 1': { range: 100, damage: 20, price: 50, fireRate: 10, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 2': { range: 150, damage: 25, price: 75, fireRate: 8, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 3': { range: 200, damage: 30, price: 100, fireRate: 6, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 4': { range: 120, damage: 22, price: 60, fireRate: 9, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 5': { range: 180, damage: 28, price: 85, fireRate: 7, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 6': { range: 160, damage: 26, price: 70, fireRate: 8, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 7': { range: 140, damage: 24, price: 55, fireRate: 8, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 8': { range: 170, damage: 27, price: 80, fireRate: 7, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 9': { range: 130, damage: 23, price: 65, fireRate: 9, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 10': { range: 100, damage: 15, price: 60, fireRate: 5, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 10, canSeeCamouflaged: true }
+    'Tower 1': { range: 100, damage: 20, price: 50, fireRate: 30, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 2': { range: 150, damage: 25, price: 75, fireRate: 25, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 3': { range: 200, damage: 30, price: 100, fireRate: 20, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 4': { range: 120, damage: 22, price: 60, fireRate: 28, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 5': { range: 180, damage: 28, price: 85, fireRate: 22, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 6': { range: 160, damage: 26, price: 70, fireRate: 24, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 7': { range: 140, damage: 24, price: 55, fireRate: 26, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 8': { range: 170, damage: 27, price: 80, fireRate: 23, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 9': { range: 130, damage: 23, price: 65, fireRate: 27, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 10': { range: 100, damage: 15, price: 60, fireRate: 40, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 10, canSeeCamouflaged: true }
 };
 
 let insufficientFundsTimeout;
 let moneyTextTimeout;
 let insufficientFundsActive = false;
 let moneyTextActive = false;
+let selectedTowerIndex = null;
 
 function handleTowerSelection(event) {
     if (gamePhase === 'preparation') {
@@ -28,35 +29,46 @@ function handleTowerSelection(event) {
 }
 
 function handleCanvasClick(event) {
-    if (gamePhase === 'preparation' && window.selectedTower) {
+    if (gamePhase === 'preparation') {
         const rect = window.canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
-            const stats = towerStats[window.selectedTower];
-            if (window.money >= stats.price) {
-                window.towers.push({
-                    x, y,
-                    range: stats.range,
-                    damage: stats.damage,
-                    cooldown: 0,
-                    fireRate: stats.fireRate,
-                    bulletSpeed: stats.bulletSpeed,
-                    splashDamage: stats.splashDamage,
-                    fireDamage: stats.fireDamage,
-                    slow: stats.slow,
-                    canSeeCamouflaged: stats.canSeeCamouflaged
-                });
-                updateMoney(-stats.price);
-                console.log(`Tower placed at (${x}, ${y}) with range ${stats.range} and damage ${stats.damage}`);
-                drawTowers();
+        if (window.selectedTower) {
+            if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
+                const stats = towerStats[window.selectedTower];
+                if (window.money >= stats.price) {
+                    window.towers.push({
+                        x, y,
+                        range: stats.range,
+                        damage: stats.damage,
+                        cooldown: 0,
+                        fireRate: stats.fireRate,
+                        bulletSpeed: stats.bulletSpeed,
+                        splashDamage: stats.splashDamage,
+                        fireDamage: stats.fireDamage,
+                        slow: stats.slow,
+                        canSeeCamouflaged: stats.canSeeCamouflaged,
+                        type: window.selectedTower
+                    });
+                    updateMoney(-stats.price);
+                    console.log(`Tower placed at (${x}, ${y}) with range ${stats.range} and damage ${stats.damage}`);
+                    drawTowers();
+                } else {
+                    showInsufficientFunds();
+                    console.log('Not enough money to place this tower');
+                }
             } else {
-                showInsufficientFunds();
-                console.log('Not enough money to place this tower');
+                console.log('Cannot place tower here');
             }
         } else {
-            console.log('Cannot place tower here');
+            const towerIndex = findTowerAt(x, y);
+            if (towerIndex !== -1) {
+                selectedTowerIndex = towerIndex;
+                showTowerInfo(window.towers[towerIndex], x, y);
+            } else {
+                hideTowerInfo();
+            }
         }
     }
 }
@@ -67,6 +79,49 @@ function handleMouseMove(event) {
     window.mouseY = event.clientY - rect.top;
     if (gamePhase === 'preparation') {
         update();
+    }
+}
+
+function findTowerAt(x, y) {
+    for (let i = 0; i < window.towers.length; i++) {
+        const tower = window.towers[i];
+        const dx = tower.x - x;
+        const dy = tower.y - y;
+        if (Math.sqrt(dx * dx + dy * dy) < window.towerSize / 2) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function showTowerInfo(tower, x, y) {
+    const panel = document.getElementById('tower-info-panel');
+    const rect = window.canvas.getBoundingClientRect();
+    const panelX = x + rect.left + 20;
+    const panelY = y + rect.top - 20;
+
+    document.getElementById('tower-info-title').textContent = `${tower.type} Info`;
+    document.getElementById('tower-info').textContent = `Price: ${towerStats[tower.type].price}`;
+
+    panel.style.left = `${panelX}px`;
+    panel.style.top = `${panelY}px`;
+    panel.style.display = 'block';
+}
+
+function hideTowerInfo() {
+    document.getElementById('tower-info-panel').style.display = 'none';
+    selectedTowerIndex = null;
+}
+
+function destroyTower() {
+    if (selectedTowerIndex !== null) {
+        const tower = window.towers[selectedTowerIndex];
+        const refund = towerStats[tower.type].price * 0.6;
+        updateMoney(refund);
+        window.towers.splice(selectedTowerIndex, 1);
+        hideTowerInfo();
+        drawTowers();
+        console.log(`Tower at index ${selectedTowerIndex} destroyed. Refunded ${refund}`);
     }
 }
 
@@ -146,3 +201,5 @@ function showInsufficientFunds() {
         moneyTextActive = false;
     }, 2000);
 }
+
+document.getElementById('destroy-tower-button').addEventListener('click', destroyTower);
