@@ -1,6 +1,7 @@
 let path = [];
 let gamePhase = 'preparation';
 let pathRandomizerInterval;
+window.bullets = [];
 
 function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerButtons) {
     window.ctx = ctx;
@@ -57,10 +58,19 @@ function update() {
     window.drawPath(path);
     window.updateTowers();
     updateEnemies();
+    updateBullets();
     drawTowers();
     drawEnemies();
+    drawBullets();
     drawPlacementIndicator();
     if (gamePhase === 'round') {
         requestAnimationFrame(update);
+    }
+}
+
+function handleMouseDown(event) {
+    if (event.button === 1) { // Middle mouse button
+        window.selectedTower = null;
+        console.log('Tower placement deselected');
     }
 }

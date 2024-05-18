@@ -12,5 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     phaseButton.addEventListener('click', startRound);
     canvas.addEventListener('click', handleCanvasClick);
     canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mousedown', handleMouseDown);
     towerButtons.forEach(button => button.addEventListener('click', handleTowerSelection));
 });

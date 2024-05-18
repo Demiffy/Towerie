@@ -1,14 +1,14 @@
-const towerRanges = {
-    'Tower 1': 100,
-    'Tower 2': 150,
-    'Tower 3': 200,
-    'Tower 4': 120,
-    'Tower 5': 180,
-    'Tower 6': 160,
-    'Tower 7': 140,
-    'Tower 8': 170,
-    'Tower 9': 130,
-    'Tower 10': 50,
+const towerStats = {
+    'Tower 1': { range: 100, damage: 20 },
+    'Tower 2': { range: 150, damage: 25 },
+    'Tower 3': { range: 200, damage: 30 },
+    'Tower 4': { range: 120, damage: 22 },
+    'Tower 5': { range: 180, damage: 28 },
+    'Tower 6': { range: 160, damage: 26 },
+    'Tower 7': { range: 140, damage: 24 },
+    'Tower 8': { range: 170, damage: 27 },
+    'Tower 9': { range: 130, damage: 23 },
+    'Tower 10': { range: 50, damage: 15 }
 };
 
 function handleTowerSelection(event) {
@@ -23,8 +23,9 @@ function handleCanvasClick(event) {
         const y = event.clientY - rect.top;
 
         if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
-            window.towers.push({ x, y, range: towerRanges[window.selectedTower] });
-            console.log(`Tower placed at (${x}, ${y}) with range ${towerRanges[window.selectedTower]}`);
+            const stats = towerStats[window.selectedTower];
+            window.towers.push({ x, y, range: stats.range, damage: stats.damage, cooldown: 0 });
+            console.log(`Tower placed at (${x}, ${y}) with range ${stats.range} and damage ${stats.damage}`);
             drawTowers();
         } else {
             console.log('Cannot place tower here');
@@ -61,8 +62,8 @@ function isPointNearTower(x, y) {
 function drawPlacementIndicator() {
     if (window.selectedTower && gamePhase === 'preparation') {
         const validPlacement = !isPointInPath(window.mouseX, window.mouseY) && !isPointNearTower(window.mouseX, window.mouseY);
-        const range = towerRanges[window.selectedTower];
-        
+        const range = towerStats[window.selectedTower].range;
+
         // Draw the range circle
         window.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         window.ctx.beginPath();
