@@ -3,13 +3,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const blockSize = 60;
 
+    const pathImage = new Image();
+    const startImage = new Image();
+    const endImage = new Image();
+    const backgroundImage = new Image();
+
+    pathImage.src = 'images/path.png';
+    startImage.src = 'images/start.png';
+    endImage.src = 'images/end.png';
+    backgroundImage.src = 'images/block.png';
+
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    function drawBlock(x, y, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+    function drawBackground() {
+        const pattern = ctx.createPattern(backgroundImage, 'repeat');
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawBlock(x, y, image) {
+        ctx.drawImage(image, x * blockSize, y * blockSize, blockSize, blockSize);
     }
 
     function drawBorders(path) {
@@ -20,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 top: path.find(p => p.x === block.x && p.y === block.y - 1),
                 right: path.find(p => p.x === block.x + 1 && p.y === block.y),
                 bottom: path.find(p => p.x === block.x && p.y === block.y + 1),
-                left: path.find(p => p.x === block.x - 1)
+                left: path.find(p => p.x === block.x - 1 && p.y === block.y)
             };
 
             // Draw borders only where there are no neighbors
@@ -147,11 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function drawPath(path) {
         clearCanvas();
+        drawBackground();
         path.forEach((block, index) => {
-            let color = '#FFD700'; // Gold for path
-            if (index === 0) color = '#00FF00'; // Green for start
-            if (index === path.length - 1) color = '#FF0000'; // Red for end
-            drawBlock(block.x, block.y, color);
+            let image = pathImage; // Default to path texture
+            if (index === 0) image = startImage; // Start texture
+            if (index === path.length - 1) image = endImage; // End texture
+            drawBlock(block.x, block.y, image);
         });
         drawBorders(path);
     }
