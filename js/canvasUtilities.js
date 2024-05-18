@@ -74,7 +74,9 @@ function shootBullet(tower, target) {
         splashDamage: tower.splashDamage,
         fireDamage: tower.fireDamage,
         slow: tower.slow,
-        speed: tower.bulletSpeed
+        speed: tower.bulletSpeed,
+        type: tower.type,
+        creationTime: Date.now() // Track bullet creation time
     };
     window.bullets.push(bullet);
 }
@@ -91,7 +93,7 @@ function predictTargetPosition(tower, target) {
     for (let i = target.pathIndex; i < path.length - 1 && remainingDistance > 0; i++) {
         const nextBlock = path[i + 1];
         const nextCenterX = nextBlock.x * window.blockSize + window.blockSize / 2;
-        const nextCenterY = nextBlock.y * window.blockSize + window.blockSize / 2;
+        const nextCenterY = nextBlock.y * window.blockSize / 2;
 
         const dx = nextCenterX - futureX;
         const dy = nextCenterY - futureY;
@@ -129,6 +131,7 @@ function predictTargetPosition(tower, target) {
 }
 
 function updateBullets() {
+    const now = Date.now();
     window.bullets.forEach((bullet, index) => {
         const targetCenterX = bullet.target.x + window.enemySize / 2;
         const targetCenterY = bullet.target.y + window.enemySize / 2;
@@ -147,9 +150,11 @@ function updateBullets() {
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         // Check if the bullet has hit the target
-        if (distance < 5) {
-            // Hit the target
-            if (!bullet.target.dead) {
+        if (distance < 5 || now - bullet.creationTime > 7000) { // Bullet despawns after 7 seconds
+            if (bullet.type === 'Mortar') {
+                // Apply splash damage for Mortar
+                applySplashDamage(bullet);
+            } else if (distance < 5 && !bullet.target.dead) {
                 const effectiveDamage = bullet.damage - bullet.target.armor; // Armor reduces damage
                 bullet.target.health -= Math.max(effectiveDamage, 0); // Ensure damage is not negative
                 if (bullet.target.health <= 0) {
@@ -162,6 +167,28 @@ function updateBullets() {
                 }
             }
             window.bullets.splice(index, 1);
+        }
+    });
+}
+
+function applySplashDamage(bullet) {
+    window.enemies.forEach(enemy => {
+        const dx = enemy.x - bullet.x;
+        const dy = enemy.y - bullet.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance <= bullet.splashDamage) {
+            const effectiveDamage = bullet.damage - enemy.armor; // Armor reduces damage
+            enemy.health -= Math.max(effectiveDamage, 0); // Ensure damage is not negative
+
+            if (enemy.health <= 0 && !enemy.dead) {
+                const reward = enemy.reward;
+                enemy.dead = true; // Mark enemy as dead
+                updateMoney(reward);
+                console.log(`Enemy killed by splash damage! Money increased by ${reward}. Total money: ${window.money}`);
+                window.enemies.splice(window.enemies.indexOf(enemy), 1);
+                checkWaveEnd();
+            }
         }
     });
 }

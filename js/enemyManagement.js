@@ -1,14 +1,17 @@
 const enemyTypes = [
-    { color: 'red', speed: 1, health: 100, reward: 20, camouflaged: false, armor: 0, spawnAfterWave: 1 },
-    { color: 'green', speed: 2, health: 50, reward: 10, camouflaged: false, armor: 1, spawnAfterWave: 1 },
-    { color: 'blue', speed: 0.5, health: 200, reward: 30, camouflaged: false, armor: 2, spawnAfterWave: 5 },
-    { color: 'grey', speed: 1.5, health: 80, reward: 15, camouflaged: true, armor: 1, spawnAfterWave: 10 },
-    { color: 'yellow', speed: 2.5, health: 40, reward: 5, camouflaged: true, armor: 0, spawnAfterWave: 3 }
+    { color: 'red', speed: 1, health: 100, reward: 50, camouflaged: false, armor: 0, spawnAfterWave: 1 },
+    { color: 'green', speed: 2, health: 50, reward: 30, camouflaged: false, armor: 1, spawnAfterWave: 1 },
+    { color: 'blue', speed: 0.5, health: 200, reward: 100, camouflaged: false, armor: 2, spawnAfterWave: 5 },
+    { color: 'grey', speed: 1.5, health: 80, reward: 45, camouflaged: true, armor: 1, spawnAfterWave: 10 },
+    { color: 'yellow', speed: 2.5, health: 40, reward: 35, camouflaged: true, armor: 0, spawnAfterWave: 3 },
+    { color: 'purple', speed: 1.2, health: 150, reward: 200, camouflaged: false, armor: 3, spawnAfterWave: 7 },
+    { color: 'black', speed: 0.8, health: 300, reward: 300, camouflaged: true, armor: 4, spawnAfterWave: 12 }
 ];
 
 function spawnWave() {
     const numberOfEnemies = 5 + Math.floor(Math.random() * 6) + (window.wave - 1) * 5; // Increase enemies by 5-10 each wave
     for (let i = 0; i < numberOfEnemies; i++) {
+        const spawnDelay = 200 + Math.random() * 800; // Random delay between 200ms (0.2s) and 1000ms (1s)
         setTimeout(() => {
             const type = getEnemyTypeForWave();
             if (type) {
@@ -29,7 +32,7 @@ function spawnWave() {
                 };
                 window.enemies.push(enemy);
             }
-        }, i * 1000); // Spawn enemies at intervals
+        }, spawnDelay * i); // Apply the random delay
     }
     requestAnimationFrame(update);
 }

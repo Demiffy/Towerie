@@ -1,8 +1,9 @@
 let path = [];
+let obstacles = [];
 let gamePhase = 'preparation';
 let pathRandomizerInterval;
 window.bullets = [];
-window.money = 100;
+window.money = 1000;
 window.wave = 1;
 let waveEndCheckTimeout = null;
 let isGameOver = false;  // Flag to track if the game is over
@@ -38,14 +39,13 @@ function initializeGame(ctx, canvas, startButton, phaseButton, bottomBar, towerB
     window.waveNumber = document.getElementById('wave-number');
     window.gameOverScreen = document.getElementById('game-over-screen');
 
-    pathRandomizerInterval = setInterval(randomizePath, 2000);
+    pathRandomizerInterval = setInterval(randomizePathAndObstacles, 2000);
 }
 
 function startGame() {
     clearInterval(pathRandomizerInterval);
     startButton.style.display = 'none';
-    path = window.generatePath();
-    window.drawPath(path);
+    randomizePathAndObstacles();
     window.phaseInfo.textContent = 'Preparation Phase';
     phaseButton.textContent = 'Start Round';
     phaseButton.style.display = 'inline-block';
@@ -54,9 +54,10 @@ function startGame() {
     update(); // Start the update loop
 }
 
-function randomizePath() {
+function randomizePathAndObstacles() {
     path = window.generatePath();
-    window.drawPath(path);
+    obstacles = window.generateObstacles(path);
+    window.drawPathAndObstacles(path, obstacles);
 }
 
 function startRound() {
@@ -72,7 +73,7 @@ function startRound() {
 function endRound() {
     if (isGameOver) return;  // Prevent ending the round if the game is over
     gamePhase = 'preparation';
-    const reward = window.wave * 10; // Example reward calculation
+    const reward = window.wave * 100; // Example reward calculation
     updateMoney(reward);
     window.wave++;
     window.waveInfo.textContent = `Wave: ${window.wave}`;
@@ -97,7 +98,7 @@ function checkWaveEnd() {
 
 function update() {
     clearCanvas();
-    window.drawPath(path);
+    window.drawPathAndObstacles(path, obstacles);
     window.updateTowers();
     updateEnemies();
     updateBullets();

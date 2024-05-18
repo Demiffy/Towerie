@@ -1,14 +1,14 @@
 const towerStats = {
-    'Tower 1': { range: 100, damage: 20, price: 50, fireRate: 30, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 2': { range: 150, damage: 25, price: 75, fireRate: 25, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 3': { range: 200, damage: 30, price: 100, fireRate: 20, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 4': { range: 120, damage: 22, price: 60, fireRate: 28, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 5': { range: 180, damage: 28, price: 85, fireRate: 22, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 6': { range: 160, damage: 26, price: 70, fireRate: 24, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 7': { range: 140, damage: 24, price: 55, fireRate: 26, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 8': { range: 170, damage: 27, price: 80, fireRate: 23, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 9': { range: 130, damage: 23, price: 65, fireRate: 27, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
-    'Tower 10': { range: 100, damage: 15, price: 60, fireRate: 40, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 10, canSeeCamouflaged: true }
+    'Brawler': { range: 75, damage: 10, price: 500, fireRate: 8, bulletSpeed: 10, splashDamage: 5, fireDamage: 0, slow: 1, canSeeCamouflaged: false },
+    'Soldier': { range: 150, damage: 25, price: 750, fireRate: 2, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Mortar': { range: 800, damage: 100, price: 1000, fireRate: 0.1, bulletSpeed: 3, splashDamage: 40, fireDamage: 2, slow: 2, canSeeCamouflaged: false },
+    'Flamethrower': { range: 100, damage: 2, price: 1500, fireRate: 80, bulletSpeed: 5, splashDamage: 0, fireDamage: 50, slow: 0, canSeeCamouflaged: false },
+    'Tower 5': { range: 180, damage: 28, price: 850, fireRate: 5, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 6': { range: 160, damage: 26, price: 700, fireRate: 6, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 7': { range: 140, damage: 24, price: 550, fireRate: 7, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 8': { range: 170, damage: 27, price: 800, fireRate: 8, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: false },
+    'Tower 9': { range: 130, damage: 23, price: 650, fireRate: 9, bulletSpeed: 5, splashDamage: 0, fireDamage: 0, slow: 0, canSeeCamouflaged: true },
+    'Sniper': { range: 500, damage: 60, price: 5000, fireRate: 0.2, bulletSpeed: 15, splashDamage: 0, fireDamage: 0, slow: 10, canSeeCamouflaged: true }
 };
 
 let insufficientFundsTimeout;
@@ -48,7 +48,7 @@ function handleCanvasClick(event) {
         const y = event.clientY - rect.top;
 
         if (window.selectedTower) {
-            if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
+            if (!isPointInPath(x, y) && !isPointNearTower(x, y) && !isPointInObstacle(x, y)) {
                 const stats = towerStats[window.selectedTower];
                 if (window.money >= stats.price) {
                     window.towers.push({
@@ -151,6 +151,14 @@ function isPointInPath(x, y) {
     });
 }
 
+function isPointInObstacle(x, y) {
+    return obstacles.some(obstacle => {
+        const obstacleX = obstacle.x * blockSize;
+        const obstacleY = obstacle.y * blockSize;
+        return x > obstacleX && x < obstacleX + obstacle.width * blockSize && y > obstacleY && y < obstacleY + obstacle.height * blockSize;
+    });
+}
+
 function isPointNearTower(x, y) {
     return window.towers.some(tower => {
         const dx = tower.x - x;
@@ -162,7 +170,7 @@ function isPointNearTower(x, y) {
 
 function drawPlacementIndicator() {
     if (window.selectedTower && gamePhase === 'preparation') {
-        const validPlacement = !isPointInPath(window.mouseX, window.mouseY) && !isPointNearTower(window.mouseX, window.mouseY);
+        const validPlacement = !isPointInPath(window.mouseX, window.mouseY) && !isPointNearTower(window.mouseX, window.mouseY) && !isPointInObstacle(window.mouseX, window.mouseY);
         const range = towerStats[window.selectedTower].range;
 
         // Draw the range circle

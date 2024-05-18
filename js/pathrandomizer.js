@@ -7,11 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const startImage = new Image();
     const endImage = new Image();
     const backgroundImage = new Image();
+    const obstacleImage = new Image();
 
     pathImage.src = 'images/path.png';
     startImage.src = 'images/start.png';
     endImage.src = 'images/end.png';
     backgroundImage.src = 'images/block.png';
+    obstacleImage.src = 'images/obstacle.png';
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,40 +29,40 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.drawImage(image, x * blockSize, y * blockSize, blockSize, blockSize);
     }
 
-    function drawBorders(path) {
+    function drawBorders(elements) {
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 2;
-        path.forEach((block, index) => {
+        elements.forEach(element => {
             let neighbors = {
-                top: path.find(p => p.x === block.x && p.y === block.y - 1),
-                right: path.find(p => p.x === block.x + 1 && p.y === block.y),
-                bottom: path.find(p => p.x === block.x && p.y === block.y + 1),
-                left: path.find(p => p.x === block.x - 1 && p.y === block.y)
+                top: elements.find(e => e.x === element.x && e.y === element.y - 1),
+                right: elements.find(e => e.x === element.x + 1 && e.y === element.y),
+                bottom: elements.find(e => e.x === element.x && e.y === element.y + 1),
+                left: elements.find(e => e.x === element.x - 1 && e.y === element.y)
             };
 
             // Draw borders only where there are no neighbors
             if (!neighbors.top) {
                 ctx.beginPath();
-                ctx.moveTo(block.x * blockSize, block.y * blockSize);
-                ctx.lineTo((block.x + 1) * blockSize, block.y * blockSize);
+                ctx.moveTo(element.x * blockSize, element.y * blockSize);
+                ctx.lineTo((element.x + 1) * blockSize, element.y * blockSize);
                 ctx.stroke();
             }
             if (!neighbors.right) {
                 ctx.beginPath();
-                ctx.moveTo((block.x + 1) * blockSize, block.y * blockSize);
-                ctx.lineTo((block.x + 1) * blockSize, (block.y + 1) * blockSize);
+                ctx.moveTo((element.x + 1) * blockSize, element.y * blockSize);
+                ctx.lineTo((element.x + 1) * blockSize, (element.y + 1) * blockSize);
                 ctx.stroke();
             }
             if (!neighbors.bottom) {
                 ctx.beginPath();
-                ctx.moveTo(block.x * blockSize, (block.y + 1) * blockSize);
-                ctx.lineTo((block.x + 1) * blockSize, (block.y + 1) * blockSize);
+                ctx.moveTo(element.x * blockSize, (element.y + 1) * blockSize);
+                ctx.lineTo((element.x + 1) * blockSize, (element.y + 1) * blockSize);
                 ctx.stroke();
             }
             if (!neighbors.left) {
                 ctx.beginPath();
-                ctx.moveTo(block.x * blockSize, block.y * blockSize);
-                ctx.lineTo(block.x * blockSize, (block.y + 1) * blockSize);
+                ctx.moveTo(element.x * blockSize, element.y * blockSize);
+                ctx.lineTo(element.x * blockSize, (element.y + 1) * blockSize);
                 ctx.stroke();
             }
         });
@@ -160,7 +162,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return path;
     }
 
-    function drawPath(path) {
+    function generateObstacles(path) {
+        const rows = Math.floor(canvas.height / blockSize);
+        const cols = Math.floor(canvas.width / blockSize);
+        const numObstacles = Math.floor(Math.random() * 5) + 3; // Random number of obstacles between 3 and 7
+        const obstacles = [];
+
+        for (let i = 0; i < numObstacles; i++) {
+            let width = Math.floor(Math.random() * 2) + 1; // 1 or 2
+            let height = Math.floor(Math.random() * 2) + 1; // 1 or 2
+            let x, y;
+            let isValid = false;
+
+            while (!isValid) {
+                x = Math.floor(Math.random() * (cols - width));
+                y = Math.floor(Math.random() * (rows - height));
+
+                // Check if the obstacle overlaps with the path
+                isValid = !path.some(block => {
+                    return (
+                        block.x >= x && block.x < x + width &&
+                        block.y >= y && block.y < y + height
+                    );
+                });
+            }
+
+            obstacles.push({ x, y, width, height });
+        }
+
+        return obstacles;
+    }
+
+    function drawPathAndObstacles(path, obstacles) {
         clearCanvas();
         drawBackground();
         path.forEach((block, index) => {
@@ -169,20 +202,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (index === path.length - 1) image = endImage; // End texture
             drawBlock(block.x, block.y, image);
         });
-        drawBorders(path);
+        obstacles.forEach(obstacle => {
+            for (let i = 0; i < obstacle.width; i++) {
+                for (let j = 0; j < obstacle.height; j++) {
+                    drawBlock(obstacle.x + i, obstacle.y + j, obstacleImage);
+                }
+            }
+        });
+        drawBorders(path.concat(obstacles.map(obs => {
+            let blocks = [];
+            for (let i = 0; i < obs.width; i++) {
+                for (let j = 0; j < obs.height; j++) {
+                    blocks.push({ x: obs.x + i, y: obs.y + j });
+                }
+            }
+            return blocks;
+        }).flat()));
+    }
+
+    function randomizePathAndObstacles() {
+        const path = generatePath();
+        const obstacles = generateObstacles(path);
+        drawPathAndObstacles(path, obstacles);
+        window.path = path;
+        window.obstacles = obstacles;
     }
 
     // Make functions globally accessible
     window.generatePath = generatePath;
-    window.drawPath = drawPath;
+    window.generateObstacles = generateObstacles;
+    window.drawPathAndObstacles = drawPathAndObstacles;
 
     window.addEventListener('resize', () => {
         adjustLayout();
-        drawPath(generatePath());
+        randomizePathAndObstacles();
     });
 
     window.addEventListener('load', () => {
         adjustLayout();
-        drawPath(generatePath());
+        randomizePathAndObstacles();
     });
 });
