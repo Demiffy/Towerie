@@ -14,9 +14,14 @@
         <div id="top-bar">
             <span id="wave-info">Wave: 1</span>
             <span id="phase-info" style="margin-left: 20px;">Preparation Phase</span>
+            <span id="money-info" style="margin-left: 20px;">Money: 100</span>
             <span id="health-info" style="float: right; margin-right: 20px;">Health: 100</span>
         </div>
         <canvas id="game-canvas"></canvas>
+        <div id="tower-stats-panel" style="display: none;">
+            <h3 id="tower-stats-title">Tower Stats</h3>
+            <p id="tower-stats"></p>
+        </div>
         <div id="bottom-bar" style="display: none;">
             <div id="tower-menu">
                 <!-- Tower options -->
@@ -34,9 +39,12 @@
             <button id="phase-button">Start Round</button>
         </div>
     </div>
-    <button id="start-game-button" style="">
+    <button id="start-game-button">
         Start Game
     </button>
+    <div id="insufficient-funds" style="display: none;">
+        <p>Not enough money!</p>
+    </div>
     <script src="js/canvassize.js"></script>
     <script src="js/pathrandomizer.js"></script>
     <script src="js/fullscreencheck.js"></script>

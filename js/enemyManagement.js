@@ -1,7 +1,7 @@
 const enemyTypes = [
-    { color: 'red', speed: 1, health: 100 },
-    { color: 'green', speed: 2, health: 50 },
-    { color: 'blue', speed: 0.5, health: 200 }
+    { color: 'red', speed: 1, health: 100, reward: 20 },
+    { color: 'green', speed: 2, health: 50, reward: 10 },
+    { color: 'blue', speed: 0.5, health: 200, reward: 30 }
 ];
 
 function spawnWave() {
@@ -17,7 +17,8 @@ function spawnWave() {
                 color: type.color,
                 speed: type.speed,
                 health: type.health,
-                maxHealth: type.health
+                maxHealth: type.health,
+                reward: type.reward
             };
             window.enemies.push(enemy);
         }, i * 1000); // Spawn enemies at intervals
@@ -50,9 +51,14 @@ function updateEnemies() {
         }
     });
 
-    // Remove enemies that reached the end
+    // Remove enemies that reached the end or are dead
     for (let i = window.enemies.length - 1; i >= 0; i--) {
         if (window.enemies[i].reachedEnd) {
+            window.enemies.splice(i, 1);
+        } else if (window.enemies[i].health <= 0) {
+            const reward = window.enemies[i].reward;
+            updateMoney(reward);
+            console.log(`Enemy killed! Money increased by ${reward}. Total money: ${window.money}`);
             window.enemies.splice(i, 1);
         }
     }
@@ -77,4 +83,12 @@ function drawEnemies() {
         window.ctx.fillStyle = 'green';
         window.ctx.fillRect(healthBarX, healthBarY, healthBarFillWidth, healthBarHeight);
     });
+}
+
+function updateHealthDisplay() {
+    window.healthInfo.textContent = `Health: ${window.health}`;
+    if (window.health <= 0) {
+        alert('Game Over');
+        window.location.reload(); // Reload the game
+    }
 }

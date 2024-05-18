@@ -1,19 +1,30 @@
 const towerStats = {
-    'Tower 1': { range: 100, damage: 20 },
-    'Tower 2': { range: 150, damage: 25 },
-    'Tower 3': { range: 200, damage: 30 },
-    'Tower 4': { range: 120, damage: 22 },
-    'Tower 5': { range: 180, damage: 28 },
-    'Tower 6': { range: 160, damage: 26 },
-    'Tower 7': { range: 140, damage: 24 },
-    'Tower 8': { range: 170, damage: 27 },
-    'Tower 9': { range: 130, damage: 23 },
-    'Tower 10': { range: 50, damage: 15 }
+    'Tower 1': { range: 100, damage: 20, price: 50 },
+    'Tower 2': { range: 150, damage: 25, price: 75 },
+    'Tower 3': { range: 200, damage: 30, price: 100 },
+    'Tower 4': { range: 120, damage: 22, price: 60 },
+    'Tower 5': { range: 180, damage: 28, price: 85 },
+    'Tower 6': { range: 160, damage: 26, price: 70 },
+    'Tower 7': { range: 140, damage: 24, price: 55 },
+    'Tower 8': { range: 170, damage: 27, price: 80 },
+    'Tower 9': { range: 130, damage: 23, price: 65 },
+    'Tower 10': { range: 50, damage: 15, price: 40 }
 };
 
+let insufficientFundsTimeout;
+let moneyTextTimeout;
+let insufficientFundsActive = false;
+let moneyTextActive = false;
+
 function handleTowerSelection(event) {
-    window.selectedTower = event.target.textContent;
-    console.log(`Selected tower: ${window.selectedTower}`);
+    if (gamePhase === 'preparation') {
+        window.selectedTower = event.target.textContent;
+        const stats = towerStats[window.selectedTower];
+        window.towerStatsTitle.textContent = `${window.selectedTower} Stats`;
+        window.towerStatsText.textContent = `Range: ${stats.range}, Damage: ${stats.damage}, Price: ${stats.price}`;
+        window.towerStatsPanel.style.display = 'block';
+        console.log(`Selected tower: ${window.selectedTower}`);
+    }
 }
 
 function handleCanvasClick(event) {
@@ -24,9 +35,15 @@ function handleCanvasClick(event) {
 
         if (!isPointInPath(x, y) && !isPointNearTower(x, y)) {
             const stats = towerStats[window.selectedTower];
-            window.towers.push({ x, y, range: stats.range, damage: stats.damage, cooldown: 0 });
-            console.log(`Tower placed at (${x}, ${y}) with range ${stats.range} and damage ${stats.damage}`);
-            drawTowers();
+            if (window.money >= stats.price) {
+                window.towers.push({ x, y, range: stats.range, damage: stats.damage, cooldown: 0 });
+                updateMoney(-stats.price);
+                console.log(`Tower placed at (${x}, ${y}) with range ${stats.range} and damage ${stats.damage}`);
+                drawTowers();
+            } else {
+                showInsufficientFunds();
+                console.log('Not enough money to place this tower');
+            }
         } else {
             console.log('Cannot place tower here');
         }
@@ -46,7 +63,7 @@ function isPointInPath(x, y) {
     return path.some(block => {
         const blockX = block.x * blockSize;
         const blockY = block.y * blockSize;
-        return x > blockX - minDistanceFromPath && x < blockX + blockSize + minDistanceFromPath && y > blockY - minDistanceFromPath && y < blockY + blockSize + minDistanceFromPath;
+        return x > blockX - minDistanceFromPath / 2 && x < blockX + blockSize + minDistanceFromPath / 2 && y > blockY - minDistanceFromPath / 2 && y < blockY + blockSize + minDistanceFromPath / 2;
     });
 }
 
@@ -75,5 +92,46 @@ function drawPlacementIndicator() {
         window.ctx.beginPath();
         window.ctx.arc(window.mouseX, window.mouseY, towerSize / 2, 0, Math.PI * 2);
         window.ctx.fill();
+
+        // Draw red areas around other towers
+        window.towers.forEach(tower => {
+            window.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            window.ctx.beginPath();
+            window.ctx.arc(tower.x, tower.y, minDistanceBetweenTowers, 0, Math.PI * 2);
+            window.ctx.fill();
+        });
     }
+}
+
+function showInsufficientFunds() {
+    const insufficientFunds = document.getElementById('insufficient-funds');
+    const moneyInfo = document.getElementById('money-info');
+
+    // If there's an existing notification, increment the counter
+    if (insufficientFundsActive) {
+        let count = parseInt(insufficientFunds.getAttribute('data-count') || '0', 10) + 1;
+        insufficientFunds.setAttribute('data-count', count);
+        insufficientFunds.textContent = `Not enough money! (${count}x)`;
+        return;
+    }
+
+    insufficientFundsActive = true;
+    moneyTextActive = true;
+
+    // Show notification and change money text color
+    insufficientFunds.style.display = 'block';
+    moneyInfo.classList.add('insufficient-funds');
+
+    // Set timeout to hide notification and reset money text color
+    insufficientFundsTimeout = setTimeout(() => {
+        insufficientFunds.style.display = 'none';
+        insufficientFundsActive = false;
+        insufficientFunds.setAttribute('data-count', '0');
+        insufficientFunds.textContent = 'Not enough money!';
+    }, 2000);
+
+    moneyTextTimeout = setTimeout(() => {
+        moneyInfo.classList.remove('insufficient-funds');
+        moneyTextActive = false;
+    }, 2000);
 }

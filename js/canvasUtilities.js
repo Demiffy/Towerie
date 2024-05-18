@@ -19,6 +19,12 @@ function updateHealthDisplay() {
     }
 }
 
+function updateMoney(amount) {
+    window.money += amount;
+    window.moneyInfo.textContent = `Money: ${window.money}`;
+    console.log(`Money updated by ${amount}. Total money: ${window.money}`);
+}
+
 function updateTowers() {
     window.towers.forEach(tower => {
         if (tower.cooldown > 0) {
@@ -97,6 +103,9 @@ function updateBullets() {
             // Hit the target
             bullet.target.health -= bullet.damage; // Deal damage according to the tower's damage
             if (bullet.target.health <= 0) {
+                const reward = bullet.target.reward;
+                updateMoney(reward);
+                console.log(`Enemy killed by bullet! Money increased by ${reward}. Total money: ${window.money}`);
                 window.enemies.splice(window.enemies.indexOf(bullet.target), 1);
             }
             window.bullets.splice(index, 1);
